@@ -39,13 +39,11 @@ class Kmeans:
     
     
     def __ppStart(self, n):
-        self._K = np.zeros((n, 2))
-        
         p0 = self._matrix[np.random.randint(low=0, high=self.nPoints),:]
-        self._K[0,:] = p0
+        self._K = np.matrix([p0])
         
-        for k in range(1, n):
-            distVec = self.distClosestPoint(p0)[:,1]
+        for k in range(1, n):            
+            distVec = self.distClosestPoint(self._K)[:,1]
         
             distVec = np.power(distVec, 2)
             probVec = distVec / np.sum(distVec)
@@ -57,7 +55,7 @@ class Kmeans:
                 if r < p:
                     i = j
                     break
-            self._K[k,:] = self._matrix[i,:]
+            self._K = np.append(self._K, [self._matrix[i,:]], axis=0)
             
             
     def fit(self, iterations = 1000):
@@ -84,9 +82,7 @@ class Kmeans:
             nPoints[k] += 1            
         
         for i in range(len(self._K)):
-            updK[i,:] /= nPoints[i]
-            
-#         self._K = updK
+            updK[i,:] /= nPoints[i]            
         
         return distVec, updK
         
@@ -96,7 +92,7 @@ class Kmeans:
         
     
     def pingCost(self, p1, p2):
-        return self._distance_function(p1, p2)
+        return self._distance_function(p1, np.reshape(p2,2))
     
     
     ''' 
